@@ -1,0 +1,5 @@
+version: '3'
+services:
+  environment:
+  - ADDRESS="localhost"
+  - PORT=":8080"
