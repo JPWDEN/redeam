@@ -1,7 +1,8 @@
-FROM golang:1.11    #golang base image
+FROM golang:1.8
 
-WORKDIR $GOPATH/src/github.com/JPWDEN/redeam
+ADD . /go/src/github.com/redeam
+RUN go install github.com/redeam
 
-COPY . .
+ENTRYPOINT /go/bin/redeam
 
 EXPOSE 8080

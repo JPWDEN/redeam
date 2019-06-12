@@ -1,5 +1,7 @@
 version: '3'
 services:
-  environment:
-  - ADDRESS="localhost"
-  - PORT=":8080"
+  api:
+    image: redeamimage
+    environment:
+      - ADDRESS="localhost"
+      - PORT=":8080"
