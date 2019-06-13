@@ -64,7 +64,7 @@ func (svr *ServerType) HandleBooks(resp http.ResponseWriter, req *http.Request) 
 	pathArgs := strings.Split(strings.Trim(path, "/"), "/")
 
 	m, _ := url.ParseQuery(req.URL.RawQuery)
-	log.Infof("query: %+v", m)
+	//log.Infof("query: %+v", m)
 	log.Infof("Path args: %+v, raw %s, length %d", pathArgs, req.URL.RawQuery, len(pathArgs))
 	switch req.Method {
 	case "GET":
