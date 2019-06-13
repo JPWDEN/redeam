@@ -12,8 +12,7 @@ type BookData struct {
 	Status      bool           `json:"status"`
 }
 
-//GetOptions hold optional string responses for retrieving book details
-type GetOptions struct {
-	Wildcard string
-	Rating   int
+type ListStatus struct {
+	Status string `json:"status"`
+	Info string `json:"info"`
 }
