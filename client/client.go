@@ -1,7 +1,8 @@
 package client
 
 import (
-	"os/exec"
+	"io/ioutil"
+	"net/http"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -9,12 +10,18 @@ import (
 //curl -v -X POST localhost:8080/books/add --data '{"title": "Redeam", "author": "JPW", "status": true}'
 //Windows: curl -v -X POST localhost:8080/books/add --data "{\"title\": \"Redeam\", \"author\": \"JPW\", \"status\": true}"
 func runAddBook() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
-
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -vv -X POST localhost:8080/books/up --data '{"title": "Josh"}'
@@ -22,39 +29,67 @@ func runAddBook() {
 //Windows: curl -vv -X POST localhost:8080/books/up --data "{\"title\": \"Josh\"}"
 //Windows: curl -vv -X POST localhost:8080/books/down --data "{\"title\": \"Josh\"}"
 func runAdjustRating() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -v -X GET localhost:8080/books/?title="Joe"
 func runGetBook() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -v -X GET localhost:8080/books/
 func runGetAllBooks() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := "http://localhost:8080/books/"
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -vv -X DELETE localhost:8080/books/up --data '{"title": "Josh"}'
 //Windows: curl -vv -X DELETE localhost:8080/books/up --data "{\"title\": \"Josh\"}"
 func runDeleteBook() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -vv -X POST localhost:8080/books/out --data '{"title": "Fire"}'
@@ -62,29 +97,43 @@ func runDeleteBook() {
 //Windows: curl -vv -X POST localhost:8080/books/out --data "{\"title\": \"Fire\"}"
 //Windows: curl -vv -X POST localhost:8080/books/in --data "{\"title\": \"Fire\"}"
 func runChangeStatus() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //curl -vv -X POST localhost:8080/books/!
 func runCollapse() {
-	cmd, err := exec.Command("").CombinedOutput()
+	url := ""
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Errorf("curl error: %v", err)
+		log.Infof("Error %v", err)
 	}
-	log.Infof("dir: %+v", string(cmd))
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Infof("Error %v", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	log.Infof(string(body))
 }
 
 //Run performs curl calls for all subsequent endpoints
 func Run() {
-	runAddBook()
-	runAdjustRating()
-	runGetBook()
+	//runAddBook()
+	//runAdjustRating()
+	//runGetBook()
 	runGetAllBooks()
-	runDeleteBook()
-	runChangeStatus()
-	runCollapse()
+	//runDeleteBook()
+	//runChangeStatus()
+	//runCollapse()
 }
