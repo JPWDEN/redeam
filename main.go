@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/redeam/client"
 	"github.com/redeam/data"
 	"github.com/redeam/service"
 	log "github.com/sirupsen/logrus"
@@ -35,6 +37,11 @@ func main() {
 		port = ":8080"
 		addr = "localhost"
 	}
+	test := false
+	if os.Getenv("TEST") == "" || os.Getenv("TEST") == "true" {
+		test = true
+	}
+	log.Infof("Test %t", test)
 
 	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:3306)/sys?parseTime=true")
 	if err != nil {
@@ -42,21 +49,22 @@ func main() {
 	}
 	defer db.Close()
 	dao := &data.StoreType{DAO: db}
-	//dao.SQLTest(types.Books{
-	//	Title:       "Josh",
-	//	Author:      "Josh",
-	//	Publisher:   "Test",
-	//	PublishDate: mysql.NullTime{},
-	//	Status:      true,
-	//})
+
+	go func() {
+		//if !test {
+		//	return
+		//}
+		for {
+			time.Sleep(time.Second * 10)
+			client.Run()
+		}
+	}()
 
 	svc := &service.ServerType{DAO: dao}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/books/", svc.HandleBooks)
 	log.Infof("Starting API on %s", addr)
-	http.ListenAndServe(port, mux)
-
-	//log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(port, mux))
 
 	log.Info("Ending service")
 }
