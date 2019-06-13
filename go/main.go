@@ -37,7 +37,7 @@ func main() {
 	}
 	log.Infof("localhost: %s", addr)
 
-	db, err := sql.Open("mysql", "root@tcp(db_host:3306)/sys?parseTime=true")
+	db, err := sql.Open("mysql", "root@tcp(db:3306)/sys?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}
