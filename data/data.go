@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/bdlm/log"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,8 +14,11 @@ type Store interface {
 	SQLTest(book types.BookData) error
 	SelectAllBooks() ([]types.BookData, error)
 	SelectSingleBook(option []string) ([]types.BookData, error)
-	CreateUpdateBook(book types.BookData) error
-	DeleteBookEntry() error
+	UpdateRating(book types.BookData, adjust int) error
+	UpdateStatus(book types.BookData, checkIn bool) (bool, error)
+	InsertBook(book types.BookData) error
+	DeleteBookEntry(book types.BookData) error
+	Farenheit451() error
 }
 
 //StoreType is the struct holding the db connection
@@ -73,35 +77,70 @@ func (store *StoreType) SelectSingleBook(option []string) ([]types.BookData, err
 	return tags, nil
 }
 
-//CreateUpdateBook updates a book.  If it doesn't exist, it is added to the db
-func (store *StoreType) CreateUpdateBook(book types.BookData) error {
+//UpdateRating updates the rating of a title in the database
+func (store *StoreType) UpdateRating(book types.BookData, adjust int) error {
+	var count int
+	err := store.DAO.QueryRow(`SELECT count(*) FROM books WHERE title = ?`, book.Title).Scan(&count)
+	if count == 0 {
+		return errors.New("Title does not exist")
+	}
+
+	_, err = store.DAO.Exec(`UPDATE books SET rating = rating + ? WHERE title = ?`, adjust, book.Title)
+	if err != nil {
+		log.Errorf("Error updating rating: %v", err)
+		return err
+	}
+	return nil
+}
+
+//UpdateStatus updates the status of a book:  Is it checkin in or out?
+func (store *StoreType) UpdateStatus(book types.BookData, checkIn bool) (bool, error) {
+	var status bool
+	err := store.DAO.QueryRow(`SELECT status FROM books WHERE title = ?`, book.Title).Scan(&status)
+	if err != nil {
+		log.Errorf("Error querying mysql: %v", err)
+		return status, err
+	}
+
+	if status != checkIn {
+		_, err := store.DAO.Exec(`UPDATE books SET status = ? WHERE title = ?`, checkIn, book.Title)
+		if err != nil {
+			log.Errorf("Error updating rating: %v", err)
+			return false, err
+		}
+	}
+	return checkIn, nil
+}
+
+//InsertBook updates a book.  If it doesn't exist, it is added to the db
+func (store *StoreType) InsertBook(book types.BookData) error {
 	var count int
 	err := store.DAO.QueryRow(`SELECT count(*) FROM books WHERE title = ?`, book.Title).Scan(&count)
 	if err != nil {
-
+		log.Errorf("Error selecting book: %v", err)
+		return err
 	}
 	if count == 0 {
 		_, err := store.DAO.Exec(`INSERT INTO books VALUES (?, ?, ?, ?, ?, ?)`, book.Title, book.Author, book.Publisher, book.PublishDate, book.Rating, book.Status)
 		if err != nil {
-
+			log.Errorf("Error inserting book: %v", err)
+			return err
 		}
 
 	} else {
-		_, err := store.DAO.Exec(`UPDATE books SET`)
-		if err != nil {
-
-		}
-
+		log.Infof("Book %s already exists; returning", book.Title)
 	}
-
 	return nil
 }
 
 //DeleteBookEntry removes a book from the database
-func (store *StoreType) DeleteBookEntry(title string) error {
-	_, err := store.DAO.Exec(`DELETE FROM books WHERE title = ?`, title)
-	if err != nil {
+func (store *StoreType) DeleteBookEntry(book types.BookData) error {
+	_, err := store.DAO.Exec(`DELETE FROM books WHERE title = ?`, book.Title)
+	return err
+}
 
-	}
-	return nil
+//There was a fire and everything was lost...Time to start fresh!
+func (store *StoreType) Farenheit451() error {
+	_, err := store.DAO.Exec(`TRUNCATE TABLE books`)
+	return err
 }
