@@ -6,7 +6,7 @@ import (
 
 	"github.com/bdlm/log"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/redeam/types"
+	"github.com/redeam/go/types"
 )
 
 //Store is the interface defining the object for db functions

@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/redeam/data"
-	"github.com/redeam/types"
+	"github.com/redeam/go/data"
+	"github.com/redeam/go/types"
 
 	"github.com/bdlm/log"
 )

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/redeam/data"
-	"github.com/redeam/service"
+	"github.com/redeam/go/data"
+	"github.com/redeam/go/service"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,8 +35,9 @@ func main() {
 		port = ":8080"
 		addr = "localhost"
 	}
+	log.Infof("localhost: %s", addr)
 
-	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:3306)/sys?parseTime=true")
+	db, err := sql.Open("mysql", "root@tcp(db:3306)/sys?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -54,9 +55,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/books/", svc.HandleBooks)
 	log.Infof("Starting API on %s", addr)
-	http.ListenAndServe(port, mux)
-
-	//log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(port, mux))
 
 	log.Info("Ending service")
 }
