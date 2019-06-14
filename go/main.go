@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/redeam/go/client"
 	"github.com/redeam/go/data"
 	"github.com/redeam/go/service"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +37,10 @@ func main() {
 		port = ":8080"
 		addr = "localhost"
 	}
-	log.Infof("localhost: %s", addr)
+	test := false
+	if os.Getenv("TEST") == "" || os.Getenv("TEST") == "true" {
+		test = true
+	}
 
 	db, err := sql.Open("mysql", "root@tcp(db:3306)/sys?parseTime=true")
 	if err != nil {
@@ -43,15 +48,18 @@ func main() {
 	}
 	defer db.Close()
 	dao := &data.StoreType{DAO: db}
-	//dao.SQLTest(types.Books{
-	//	Title:       "Josh",
-	//	Author:      "Josh",
-	//	Publisher:   "Test",
-	//	PublishDate: mysql.NullTime{},
-	//	Status:      true,
-	//})
-
 	svc := &service.ServerType{DAO: dao}
+
+	go func() {
+		if !test {
+			return
+		}
+		for {
+			time.Sleep(time.Minute)
+			client.Run()
+		}
+	}()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/books/", svc.HandleBooks)
 	log.Infof("Starting API on %s", addr)
