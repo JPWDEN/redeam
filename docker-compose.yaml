@@ -20,5 +20,6 @@ services:
     environment:
       - ADDRESS=localhost
       - PORT=:8080
+      - TEST="true"
     depends_on:
       - db
